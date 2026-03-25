@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirror — See How You Really Come Across</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="bg-aurora" aria-hidden="true">
+    <div class="aurora-1"></div>
+    <div class="aurora-2"></div>
+    <div class="aurora-3"></div>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- ══════════════════════════════════════
+         INPUT SCREEN
+    ══════════════════════════════════════ -->
+    <div id="screen-input" class="screen active">
+      <nav class="nav">
+        <div class="nav-logo">
+          <span class="nav-mark">◈</span>
+          <span class="nav-name">Mirror</span>
+        </div>
+        <div class="nav-right">
+          <div class="nav-badge">Beta · Free</div>
+        </div>
+      </nav>
+
+      <div class="input-layout">
+        <!-- Hero -->
+        <div class="hero-col">
+          <div class="hero-eyebrow">AI Communication Analysis</div>
+          <h1 class="hero-title">The mirror<br/><em>doesn't lie.</em></h1>
+          <p class="hero-sub">Paste any conversation. Mirror reveals the blind spots between what you mean and what others actually hear.</p>
+
+          <div class="hero-pills">
+            <div class="pill"><span class="pill-dot high"></span>Blind spot detection</div>
+            <div class="pill"><span class="pill-dot med"></span>Communication archetype</div>
+            <div class="pill"><span class="pill-dot low"></span>AI coach + rewrites</div>
+          </div>
+
+          <div class="hero-stat-row">
+            <div class="hero-stat">
+              <div class="hero-stat-num">6</div>
+              <div class="hero-stat-label">Dimensions<br/>analyzed</div>
+            </div>
+            <div class="hero-stat-div"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">8</div>
+              <div class="hero-stat-label">Archetypes<br/>identified</div>
+            </div>
+            <div class="hero-stat-div"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">0</div>
+              <div class="hero-stat-label">Data<br/>stored</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="form-col">
+          <div class="glass-card">
+            <!-- Tabs -->
+            <div class="tabs">
+              <button class="tab active" onclick="switchTab('analyze')">Analyze Conversation</button>
+              <button class="tab" onclick="switchTab('rewrite')">Quick Rewrite</button>
+            </div>
+
+            <!-- Analyze Tab -->
+            <div id="tab-analyze" class="tab-panel active">
+              <div class="field">
+                <label for="your-name"><span class="field-num">01</span>Your name in the conversation</label>
+                <input id="your-name" type="text" placeholder="How you appear — e.g. Me, Alex…" autocomplete="off" />
+              </div>
+              <!-- Upload Zone -->
+              <div class="upload-zone" id="upload-zone"
+                   ondragover="handleDragOver(event)"
+                   ondragleave="handleDragLeave(event)"
+                   ondrop="handleDrop(event)">
+                <div class="upload-btns">
+                  <button class="upload-btn" id="btn-upload-chat" onclick="triggerChatUpload()">
+                    <span class="upload-btn-icon">◫</span>
+                    <span>Chat file</span>
+                    <span class="upload-btn-hint">.txt</span>
+                  </button>
+                  <button class="upload-btn" id="btn-upload-voice" onclick="triggerVoiceUpload()">
+                    <span class="upload-btn-icon">◎</span>
+                    <span>Voice clip</span>
+                    <span class="upload-btn-hint">mp3 · m4a · wav</span>
+                  </button>
+                  <span class="upload-or">or paste below</span>
+                </div>
+                <input type="file" id="file-chat-input" accept=".txt" style="display:none" onchange="handleChatFile(this)" />
+                <input type="file" id="file-voice-input" accept=".mp3,.m4a,.wav,.webm,.ogg" style="display:none" onchange="handleVoiceFile(this)" />
+                <div id="upload-status" class="upload-status hidden"></div>
+              </div>
+              <div id="transcript-note" class="transcript-note hidden"></div>
+
+              <div class="field">
+                <label for="conversation"><span class="field-num">02</span>Paste your conversation</label>
+                <textarea id="conversation" rows="9"
+                  placeholder="Jordan: Hey, did you get my message?&#10;Me: Yeah, whatever, it's fine.&#10;Jordan: You seem upset…&#10;Me: I said I'm fine. Drop it."></textarea>
+                <div class="field-meta">
+                  <span class="field-tip">Works with iMessage, WhatsApp, Slack, email</span>
+                  <span id="char-count" class="char-count">0 chars</span>
+                </div>
+              </div>
+
+              <!-- Sample conversations -->
+              <div class="samples-row">
+                <span class="samples-label">Try a sample:</span>
+                <button class="sample-btn" onclick="loadSample('avoider')">The Avoider</button>
+                <button class="sample-btn" onclick="loadSample('deflector')">The Deflector</button>
+                <button class="sample-btn" onclick="loadSample('pleaser')">The Pleaser</button>
+              </div>
+
+              <button id="analyze-btn" class="cta-btn" onclick="analyze()">
+                <span id="btn-text">Look in the Mirror</span>
+                <span id="btn-loader" class="spin-loader hidden"></span>
+                <span class="cta-arrow" id="cta-arrow">→</span>
+              </button>
+              <p class="privacy-note"><span class="lock-icon">⚿</span> Never stored. Analysis happens in real-time.</p>
+            </div>
+
+            <!-- Rewrite Tab -->
+            <div id="tab-rewrite" class="tab-panel">
+              <div class="field">
+                <label for="rw-message"><span class="field-num">01</span>Message to rewrite</label>
+                <textarea id="rw-message" rows="4" placeholder="e.g. Fine, whatever. Do it your way then."></textarea>
+              </div>
+              <div class="field">
+                <label for="rw-context"><span class="field-num">02</span>Context (optional)</label>
+                <input id="rw-context" type="text" placeholder="e.g. Disagreement with a coworker about a project" />
+              </div>
+              <button class="cta-btn" onclick="doRewrite()">
+                <span id="rw-btn-text">Rewrite It</span>
+                <span id="rw-btn-loader" class="spin-loader hidden"></span>
+                <span class="cta-arrow" id="rw-cta-arrow">→</span>
+              </button>
+              <div id="rewrite-results" class="rewrite-results hidden"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         LOADING SCREEN
+    ══════════════════════════════════════ -->
+    <div id="screen-loading" class="screen">
+      <div class="loading-wrap">
+        <div class="mirror-orb">
+          <div class="orb-ring orb-ring-1"></div>
+          <div class="orb-ring orb-ring-2"></div>
+          <div class="orb-ring orb-ring-3"></div>
+          <div class="orb-core">◈</div>
+        </div>
+        <h2 class="loading-title">Reading between<br/><em>the lines…</em></h2>
+        <div class="loading-steps">
+          <div class="lstep" id="step-1"><span class="lstep-dot"></span><span>Reading your messages</span></div>
+          <div class="lstep" id="step-2"><span class="lstep-dot"></span><span>Detecting blind spots</span></div>
+          <div class="lstep" id="step-3"><span class="lstep-dot"></span><span>Building your profile</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         RESULTS SCREEN
+    ══════════════════════════════════════ -->
+    <div id="screen-results" class="screen">
+      <div class="results-nav">
+        <div class="nav-logo">
+          <span class="nav-mark">◈</span>
+          <span class="nav-name">Mirror</span>
+        </div>
+        <button class="ghost-btn" onclick="reset()">← New analysis</button>
+      </div>
+
+      <div class="results-body">
+
+        <!-- Score + Archetype Banner -->
+        <div class="score-banner">
+          <div class="score-left">
+            <div class="score-eyebrow">Self-Awareness Score</div>
+            <div class="score-row">
+              <div class="score-big" id="overall-score">—</div>
+              <div class="score-denom">/100</div>
+            </div>
+            <p id="tagline-text" class="score-tagline"></p>
+          </div>
+          <div class="score-mid">
+            <div class="score-ring-wrap">
+              <svg viewBox="0 0 120 120" class="score-svg">
+                <circle cx="60" cy="60" r="54" class="ring-bg" />
+                <circle cx="60" cy="60" r="54" class="ring-fill" id="score-ring" />
+              </svg>
+            </div>
+          </div>
+          <div class="archetype-card" id="archetype-card">
+            <div class="archetype-icon" id="archetype-icon">◈</div>
+            <div class="archetype-label">Your Archetype</div>
+            <div class="archetype-name" id="archetype-name">—</div>
+            <div class="archetype-tagline" id="archetype-tagline">—</div>
+          </div>
+        </div>
+
+        <!-- Dimension Bars -->
+        <div class="dims-section">
+          <div class="dims-label">Communication Profile</div>
+          <div id="dims-bars" class="dims-bars"></div>
+        </div>
+
+        <div class="results-grid">
+          <!-- Left: Blind Spots -->
+          <div class="col-main">
+            <section class="r-section">
+              <div class="r-section-header">
+                <span class="r-section-num">01</span>
+                <div>
+                  <h3 class="r-section-title">Blind Spots</h3>
+                  <p class="r-section-sub">The gap between what you mean and what others hear.</p>
+                </div>
+              </div>
+              <div id="blind-spots-list"></div>
+            </section>
+
+            <div class="one-thing-card">
+              <div class="ot-icon">✦</div>
+              <div class="ot-label">The one thing to change</div>
+              <p id="one-thing-text" class="ot-text"></p>
+            </div>
+          </div>
+
+          <!-- Right: Radar + Strengths -->
+          <div class="col-side">
+            <section class="r-section side-section">
+              <div class="r-section-header">
+                <span class="r-section-num">02</span>
+                <div><h3 class="r-section-title">Radar View</h3></div>
+              </div>
+              <div class="chart-glass">
+                <canvas id="radar-chart"></canvas>
+              </div>
+            </section>
+
+            <section class="r-section side-section">
+              <div class="r-section-header">
+                <span class="r-section-num">03</span>
+                <div><h3 class="r-section-title">What You Do Well</h3></div>
+              </div>
+              <div id="strengths-list" class="strengths-wrap"></div>
+            </section>
+          </div>
+        </div>
+
+        <!-- AI Coach Chat -->
+        <div class="coach-section">
+          <div class="coach-header">
+            <div class="coach-header-left">
+              <div class="coach-icon">◈</div>
+              <div>
+                <div class="coach-title">Ask Mirror</div>
+                <div class="coach-sub">Your personal communication coach — trained on your specific results</div>
+              </div>
+            </div>
+            <div class="coach-badge">AI Coach</div>
+          </div>
+          <div id="coach-messages" class="coach-messages">
+            <div class="coach-msg assistant">
+              <div class="coach-msg-content" id="coach-intro">
+                I've analyzed your conversation. Ask me anything about your blind spots or how to improve. I know your specific patterns.
+              </div>
+            </div>
+          </div>
+          <div class="coach-input-row">
+            <input
+              id="coach-input"
+              type="text"
+              placeholder="e.g. How do I stop being passive aggressive?"
+              onkeydown="if(event.key==='Enter') sendCoachMessage()"
+            />
+            <button class="coach-send-btn" onclick="sendCoachMessage()">
+              <span id="coach-send-text">→</span>
+              <span id="coach-send-loader" class="spin-loader hidden" style="width:14px;height:14px;"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="results-footer">
+          <button class="cta-btn wide" onclick="reset()">
+            <span>Analyze Another Conversation</span>
+            <span class="cta-arrow">→</span>
+          </button>
+          <p class="results-note">Mirror is free during beta. No account needed.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
